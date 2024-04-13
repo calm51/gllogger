@@ -15,6 +15,7 @@ gL.setFunction(gL_function)
 gL.init("function")
 
 # You can write logs to files.
+import os
 gL.setLogDir(os.path.join(os.getcwd(), "log", ))
 gL.init("logging")
 
