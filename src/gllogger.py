@@ -1,21 +1,29 @@
-import logging
-
 """
+from gllogger import gL
 
-gL.getLogger(__name__).init("debug")
+gL.getLogger(__name__)
+gL.setGlobalLevel(logging.DEBUG)
+
+gL.init("console")
 
 def gL_function(text):
     print(text)
-gL.getLogger(__name__)
 gL.setFunction(gL_function)
 gL.init("function")
 
-gL.getLogger(__name__)
 gL.setLogDir(os.path.join(os.getcwd(), "log", ))
 gL.init("logging")
-gL.check_switch()
+
+gL.debugs("a", 1, True, )
+gL.infos()
+gL.warns()
+gL.errors()
 
 """
+
+__all__ = ["gL", ]
+
+import logging
 
 
 class GlobalLogger(logging.Logger):
@@ -97,7 +105,7 @@ class GlobalLogger(logging.Logger):
             super().__init__(*args, **kwargs)
             # self.setLevel(logging.DEBUG)
             self.log_dir_path = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "log", )
-            self.output = "debug"
+            self.output = "console"
             self.log_format = None
             self.log_start_time = None
             self.log_file_path = None
@@ -106,16 +114,16 @@ class GlobalLogger(logging.Logger):
 
     def init(self, output):
         """
-        :param output: ("debug", "function", "logging",)
+        :param output: ("console", "function", "logging",)
         :return: self
         """
-        if output in ("debug", "function", "logging",):
+        if output in ("console", "function", "logging",):
             self.output = output
         else:
             raise ValueError(f'parameter "output" cannot be {output}.')
         self.log_start_time = time.time()
         self.log_file_path = os.path.join(self.log_dir_path, time.strftime("%Y-%m-%d_%H-%M-%S.log", self.utc8()))
-        if self.output == "debug":
+        if self.output == "console":
             self.log_handler = GlobalLogger.StreamHandler(None)
         elif self.output == "function":
             self.log_handler = GlobalLogger.FunctionHandler()
@@ -124,7 +132,7 @@ class GlobalLogger(logging.Logger):
             self.log_file_fp = open(self.log_file_path, "a", encoding="utf8", buffering=1)
             self.log_handler = GlobalLogger.StreamHandler(self.log_file_fp)
 
-        if self.output in ("debug", "function",):
+        if self.output in ("console", "function",):
             _fmt = "[%(levelname)s %(asctime)s %(fullModule)s[%(lineno)d].%(className)s%(funcName)s%(threadNameMe)s%(asyncTaskName)s] %(message)s"
             _datefmt = "%H:%M:%S"
         else:
@@ -281,6 +289,16 @@ class GlobalLogger(logging.Logger):
         return _result
 
     """====================================="""
+
+    @staticmethod
+    def debugs(*args, sep=" "):
+        caller_frame = inspect.currentframe().f_back
+        _fullModule = inspect.getmodule(caller_frame).__name__
+        return GlobalLogger._instance.debug(sep.join((str(i) for i in args)), stacklevel=3, extra={
+            "fullModule": "main" if _fullModule == "__main__" else _fullModule,
+            "className": GlobalLogger.get_class_name(caller_frame),
+            "threadNameMe": "" if threading.currentThread() == threading.main_thread() else " " + threading.current_thread().getName(),
+        })
 
     @staticmethod
     def infos(*args, sep=" "):
