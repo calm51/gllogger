@@ -10,6 +10,10 @@ requires-python = ">=3.6"
 classifiers = [
     "Programming Language :: Python :: 3",
 ]
+keywords = ["logger", "global logger", "logger hook", "easy logger"]
+dependencies = [
+  "better_exceptions",
+]
 
 [project.urls]
 Homepage = "https://github.com/calm51/gllogger"
