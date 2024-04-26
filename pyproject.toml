@@ -16,5 +16,5 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/calm510/gllogger"
-Issues = "https://github.com/calm510/gllogger/issues"
+Homepage = "https://github.com/calm51/gllogger"
+Issues = "https://github.com/calm51/gllogger/issues"
