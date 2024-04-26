@@ -2,8 +2,9 @@
 from gllogger import gL
 
 gL.getLogger(__name__)
-gL.setLoggerClass()
 gL.setGlobalLevel(logging.DEBUG)
+if gL.getLogger(__name__).name == "__main__":
+    gL.setLoggerClass()
 
 gL.init(gL.OT_console)
 
