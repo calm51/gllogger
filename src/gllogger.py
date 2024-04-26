@@ -1,9 +1,8 @@
 """
 from gllogger import gL
 
+gL.setLoggerClass(__name__)
 gL.setGlobalLevel(logging.DEBUG)
-if gL.getLogger(__name__).name == "__main__":
-    gL.setLoggerClass()
 
 gL.getLogger(__name__).init(gL.OT_console)
 
@@ -374,10 +373,11 @@ class GlobalLogger(logging.Logger):
     _had_setLoggerClass = False
 
     @staticmethod
-    def setLoggerClass():
-        GlobalLogger._had_setLoggerClass = True
-        logging.setLoggerClass(GlobalLogger)
-        logging.setLoggerClass = lambda *args, **kwargs: GlobalLogger._instance.warns(args, kwargs)
+    def setLoggerClass(name):
+        if name == "__main__":
+            GlobalLogger._had_setLoggerClass = True
+            logging.setLoggerClass(GlobalLogger)
+            logging.setLoggerClass = lambda *args, **kwargs: GlobalLogger._instance.warns(args, kwargs)
         return
 
     @staticmethod
