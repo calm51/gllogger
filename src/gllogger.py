@@ -2,6 +2,7 @@
 from gllogger import gL
 
 gL.getLogger(__name__)
+gL.setLoggerClass()
 gL.setGlobalLevel(logging.DEBUG)
 
 gL.init(gL.OT_console)
@@ -144,6 +145,7 @@ class GlobalLogger(logging.Logger):
     def init(self, output):
         if output not in (self.OT_console, self.OT_function, self.OT_logging,):
             raise ValueError(f'parameter "output" cannot be {output}.')
+        if self.name != "__main__": return
         self.output = output
         self.log_start_time = time.time()
         self.log_file_path = os.path.join(self.log_dir_path, time.strftime("%Y-%m-%d_%H-%M-%S.log", self.utc8()))
@@ -175,6 +177,7 @@ class GlobalLogger(logging.Logger):
         return time.gmtime(time.time() + (8 * 3600))  # gmtime localtime
 
     def switch(self, ):
+        if self.name != "__main__": return
         if self.output != self.OT_logging: return
         self.infos(f"""switch log files.""")
         os.makedirs(self.log_dir_path, exist_ok=True)
@@ -195,15 +198,19 @@ class GlobalLogger(logging.Logger):
 
     @staticmethod
     def unset_handler():
-        # GlobalLogger._instance.removeHandler(GlobalLogger._instance.log_handler)
-        logging.getLogger().removeHandler(GlobalLogger._instance.log_handler)
+        if GlobalLogger._had_setLoggerClass:
+            logging.getLogger().removeHandler(GlobalLogger._instance.log_handler)
+        else:
+            GlobalLogger._instance.removeHandler(GlobalLogger._instance.log_handler)
         # for logger_name in logging.Logger.manager.loggerDict:
         #     logging.getLogger(logger_name).removeHandler(GlobalLogger._instance.log_handler)
 
     @staticmethod
     def set_handler():
-        # GlobalLogger._instance.addHandler(GlobalLogger._instance.log_handler)
-        logging.getLogger().addHandler(GlobalLogger._instance.log_handler)
+        if GlobalLogger._had_setLoggerClass:
+            logging.getLogger().addHandler(GlobalLogger._instance.log_handler)
+        else:
+            GlobalLogger._instance.addHandler(GlobalLogger._instance.log_handler)
         # logging.getLogger("abc").addHandler(self.log_handler)
         # logging.basicConfig(level=logging.DEBUG, handlers=[self.log_handler, ])
         # for logger_name in logging.Logger.manager.loggerDict:
@@ -364,8 +371,11 @@ class GlobalLogger(logging.Logger):
     def setGlobalLevel(level):
         return logging.getLogger().setLevel(level)
 
+    _had_setLoggerClass = False
+
     @staticmethod
     def setLoggerClass():
+        GlobalLogger._had_setLoggerClass = True
         logging.setLoggerClass(GlobalLogger)
         logging.setLoggerClass = lambda *args, **kwargs: GlobalLogger._instance.warns(args, kwargs)
         return
@@ -421,7 +431,6 @@ class GlobalLogger(logging.Logger):
 
 
 gL = GlobalLogger
-gL.setLoggerClass()
 gL.setGlobalLevel(logging.DEBUG)
 import os, sys, time, inspect, asyncio, threading, re, html
 
