@@ -1,20 +1,19 @@
 """
 from gllogger import gL
 
-gL.getLogger(__name__)
 gL.setGlobalLevel(logging.DEBUG)
 if gL.getLogger(__name__).name == "__main__":
     gL.setLoggerClass()
 
-gL.init(gL.OT_console)
+gL.getLogger(__name__).init(gL.OT_console)
 
 def gL_function(text):
     print(text)
 gL.setFunction(gL_function)
-gL.init(gL.OT_function)
+gL.getLogger(__name__).init(gL.OT_function)
 
 gL.setLogDir(os.path.join(os.getcwd(), "log", ))
-gL.init(gL.OT_logging)
+gL.getLogger(__name__).init(gL.OT_logging)
 
 gL.debugs("a", 1, True, )
 gL.infos()
