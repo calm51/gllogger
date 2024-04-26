@@ -1,9 +1,8 @@
-> pip install gllogger
 ```python3
 # NOTE: You should import gllogger before executing any other code.
 from gllogger import gL
 
-gL.setLoggerClass(__name__)
+gL.enableGlobalHandler(True)
 gL.setGlobalLevel(logging.DEBUG)
 
 ...
