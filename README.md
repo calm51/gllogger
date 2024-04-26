@@ -2,9 +2,9 @@
 # NOTE: You should import gllogger before executing any other code.
 from gllogger import gL
 
+gL.setGlobalLevel(logging.DEBUG)
 if gL.getLogger(__name__).name == "__main__":
     gL.setLoggerClass()
-gL.setGlobalLevel(logging.DEBUG)
 
 ...
 ```
