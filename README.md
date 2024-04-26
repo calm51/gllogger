@@ -11,18 +11,18 @@ if gL.getLogger(__name__).name == "__main__":
 
 ```python3
 # You can log into the console,
-gL.init(gL.OT_console)
+gL.getLogger(__name__).init(gL.OT_console)
 
 # or you can pass logs into a function,
 def gL_function(text):
     print(text)
 gL.setFunction(gL_function)
-gL.init(gL.OT_function)
+gL.getLogger(__name__).init(gL.OT_function)
 
 # or you can write logs to files.
 import os
 gL.setLogDir(os.path.join(os.getcwd(), "log", ))
-gL.init(gL.OT_logging)
+gL.getLogger(__name__).init(gL.OT_logging)
 
 
 # Then, use the following function anywhere to log.
