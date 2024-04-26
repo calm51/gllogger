@@ -1,7 +1,7 @@
 """
 from gllogger import gL
 
-gL.setLoggerClass(__name__)
+gL.enableGlobalHandler(True)
 gL.setGlobalLevel(logging.DEBUG)
 
 gL.getLogger(__name__).init(gL.OT_console)
@@ -197,7 +197,7 @@ class GlobalLogger(logging.Logger):
 
     @staticmethod
     def unset_handler():
-        if GlobalLogger._had_setLoggerClass:
+        if GlobalLogger._had_enableGlobalHandler:
             logging.getLogger().removeHandler(GlobalLogger._instance.log_handler)
         else:
             GlobalLogger._instance.removeHandler(GlobalLogger._instance.log_handler)
@@ -206,7 +206,7 @@ class GlobalLogger(logging.Logger):
 
     @staticmethod
     def set_handler():
-        if GlobalLogger._had_setLoggerClass:
+        if GlobalLogger._had_enableGlobalHandler:
             logging.getLogger().addHandler(GlobalLogger._instance.log_handler)
         else:
             GlobalLogger._instance.addHandler(GlobalLogger._instance.log_handler)
@@ -215,6 +215,12 @@ class GlobalLogger(logging.Logger):
         # for logger_name in logging.Logger.manager.loggerDict:
         #     print(logging.getLogger(logger_name), )
         #     logging.getLogger(logger_name).addHandler(GlobalLogger._instance.log_handler)
+
+    _had_enableGlobalHandler = False
+
+    @staticmethod
+    def enableGlobalHandler(bl, ):
+        GlobalLogger._had_enableGlobalHandler = bl
 
     """====================================="""
 
@@ -370,14 +376,10 @@ class GlobalLogger(logging.Logger):
     def setGlobalLevel(level):
         return logging.getLogger().setLevel(level)
 
-    _had_setLoggerClass = False
-
     @staticmethod
-    def setLoggerClass(name):
-        if name == "__main__":
-            GlobalLogger._had_setLoggerClass = True
-            logging.setLoggerClass(GlobalLogger)
-            logging.setLoggerClass = lambda *args, **kwargs: GlobalLogger._instance.warns(args, kwargs)
+    def setLoggerClass():
+        logging.setLoggerClass(GlobalLogger)
+        logging.setLoggerClass = lambda *args, **kwargs: GlobalLogger._instance.warns(args, kwargs)
         return
 
     @staticmethod
@@ -431,6 +433,7 @@ class GlobalLogger(logging.Logger):
 
 
 gL = GlobalLogger
+gL.setLoggerClass()
 gL.setGlobalLevel(logging.DEBUG)
 import os, sys, time, inspect, asyncio, threading, re, html
 
